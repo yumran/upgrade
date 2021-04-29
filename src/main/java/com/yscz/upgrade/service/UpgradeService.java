@@ -90,7 +90,7 @@ public class UpgradeService {
         }
 
         // 清空解压目标文件夹
-        File destDir = new File(upgradeBasicPath);
+        File destDir = new File(upgradePath.substring(0, upgradePath.lastIndexOf(".zip")));
         if(!destDir.exists() || !destDir.isDirectory()) {
             destDir.mkdirs();
             logger.info("mkdir1 file :" + destDir.getAbsolutePath());
