@@ -21,12 +21,13 @@ public class ShellCommandTools {
     public static boolean runShellCommand(String command) {
         logger.info("ShellCommandTools runShell command:" + command);
         try {
+            String[] args;
             String os = ViewConfig.OSName;
             if(os.toLowerCase().startsWith("win")){
-                return true;
+                args = new String[]{"/bin/sh", "-c", command};
+            }else {
+                args = new String[]{"sh", "-c", command};
             }
-
-            String[] args = new String[]{"/bin/sh", "-c", command};
 
             Process process = Runtime.getRuntime().exec(args);
             InputStream errorStream = process.getErrorStream();
@@ -53,7 +54,7 @@ public class ShellCommandTools {
             for (String createFilePath : set) {
                 File file = new File(createFilePath + "/create.sh");
                 if(file.exists()) {
-                    runShellCommand(file.getAbsolutePath());
+                    runShellCommand("cd " + createFilePath + " && ./create.sh");
                 }
             }
         }catch (Exception e) {

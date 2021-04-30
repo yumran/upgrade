@@ -33,11 +33,14 @@ public class UpgradeController {
         if(StringUtils.isEmpty(localXmlPath) || StringUtils.isEmpty(upgradePKG)) {
             return RespBean.error("本地版本记录文件或升级包文件不可为空， 请指定本地版本记录文件或升级包文件路径！！");
         }
-        String upgradeBasicPath = upgradePKG.substring(0, upgradePKG.lastIndexOf("\\") + 1);    //升级包去除文件名的路径 (基础路径)
-        String upgradeXmlPath = upgradePKG.substring(0, upgradePKG.lastIndexOf(".zip")) + "\\upgrade.xml";
+
         if(ViewConfig.OSName.contains("win")) {
+            String upgradeBasicPath = upgradePKG.substring(0, upgradePKG.lastIndexOf("\\") + 1);    //升级包去除文件名的路径 (基础路径)
+            String upgradeXmlPath = upgradePKG.substring(0, upgradePKG.lastIndexOf(".zip")) + "\\upgrade.xml";
             return upgradeService.upgradeAplication_win(upgradeBasicPath, upgradePKG, localXmlPath, upgradeXmlPath);
         }else if(ViewConfig.OSName.contains("linux")){
+            String upgradeBasicPath = upgradePKG.substring(0, upgradePKG.lastIndexOf("/") + 1);    //升级包去除文件名的路径 (基础路径)
+            String upgradeXmlPath = upgradePKG.substring(0, upgradePKG.lastIndexOf(".zip")) + "/upgrade.xml";
             return upgradeService.upgradeAplication_linux(upgradeBasicPath, upgradePKG, localXmlPath, upgradeXmlPath);
         }
         return RespBean.ok();

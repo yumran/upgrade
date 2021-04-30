@@ -84,6 +84,13 @@ public class UpgradeService {
         // 执行脚本文件
         if(!ShellCommandTools.runShellFiles(FileTools.destDirList)) return ShellCommandTools.respBean;
 
+        // 将upgradeXml文件写入localXml
+        FileTools.readAndWriteFile(upgradeXmlPath, localXmlPath, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                logger.info("UpgradeService FileTools readAndWriteFile newValue:" + evt.getNewValue());
+            }
+        });
         return RespBean.ok();
     }
 
