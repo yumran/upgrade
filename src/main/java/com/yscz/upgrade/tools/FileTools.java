@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
@@ -118,7 +115,7 @@ public class FileTools {
                     OutputStream out = null;
                     try {
                         in = zipFile.getInputStream(zipEntry);
-                        String outPath = unZipFolder.getAbsolutePath() + zipEntryName;
+                        String outPath = unZipFolder.getAbsolutePath().substring(0, unZipFolder.getAbsolutePath().lastIndexOf("\\") + 1) + zipEntryName;
                         logger.info("FileTools unZipFile outPath：" + outPath);
                         //判断路径是否存在，不存在则创建文件路径
                         File file = new File(outPath.substring(0, outPath.lastIndexOf("\\")));
@@ -182,7 +179,7 @@ public class FileTools {
     public static boolean clearFolder(File file) {
         logger.info("FileTools clearFolder folder:" + file.getAbsolutePath());
         try {
-            if(file.isDirectory()) {
+            if(file.getAbsolutePath().endsWith("upgradePKG") && file.isDirectory()) {
                 File[] files = file.listFiles();
                 if(files != null) {
                     //循环子文件夹重复调用delete方法
@@ -191,7 +188,7 @@ public class FileTools {
                     }
                 }
             }
-            if(!file.delete()) {
+            if(file.getAbsolutePath().contains("upgradePKG") && !file.delete()) {
                 respBean = RespBean.error("delete file failed, file name: " + file.getName());
                 return false;
             }
@@ -297,4 +294,68 @@ public class FileTools {
             destDirList.add(destDir);
         }
     }
+
+
+    /**
+     * 读写文件操作
+     * @param readFilPath
+     * @param writeFilePath
+     * @param propertyChangeListener
+     * @return
+     */
+    public static boolean readAndWriteFile(String readFilPath, String writeFilePath, PropertyChangeListener propertyChangeListener) {
+        boolean reultFlag = false;
+        // 文件大小
+        long length = 0;
+        // 高效字符输入流
+        BufferedReader bufferedReader = null;
+        // 高效字符输出流
+        BufferedWriter bufferedWriter = null;
+        try {
+            File readFile = new File(readFilPath);
+            if(!readFile.exists()) {
+                respBean = RespBean.error("读写操作时源文件不存在，请检查！！");
+            }
+
+            long totalSize = readFile.length();  //总大小
+            long readSize = 0;
+
+            File writeFile = new File(writeFilePath);
+            if(!writeFile.exists()) {
+                writeFile.mkdirs();
+            }
+
+            bufferedReader = new BufferedReader(new FileReader(readFile));
+            bufferedWriter = new BufferedWriter(new FileWriter(writeFile));
+
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                bufferedWriter.write(line); //写入文件
+                bufferedWriter.flush();
+                readSize += line.length();// 累加字符长度
+                Integer newValue = (int) ((readSize * 1.0 / totalSize) * 100);// 已解压的字节大小占总字节的大小的百分比
+                if (propertyChangeListener != null) {// 通知调用者解压进度发生改变
+                    propertyChangeListener.propertyChange(new PropertyChangeEvent(readFile, "progress", readSize, newValue));
+                }
+            }
+            reultFlag = true;
+        }catch (Exception e) {
+            e.printStackTrace();
+            respBean = RespBean.error("读写操作时异常，e:" + e.getMessage());
+        }finally{
+            try {
+                if(bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if(bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                respBean = RespBean.error("读写操作时关闭输入输出流异常，e:" + e.getMessage());
+            }
+        }
+        return reultFlag;
+    }
+
 }

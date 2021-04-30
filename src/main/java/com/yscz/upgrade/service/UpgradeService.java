@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileFilter;
 
 @Service
 public class UpgradeService {
@@ -32,18 +33,30 @@ public class UpgradeService {
         // 更新前的检验
         if (!upgradeCommon(upgradeBasicPath, upgradePath, localXmlPath, upgradeXmlPath)) return FileTools.respBean;
         // 执行卸载脚本
-        String localBasicPath = localXmlPath.substring(0, localXmlPath.lastIndexOf("\\") + 1);
-        BatFileTools.getInstance().execBatFile(localBasicPath + ViewConfig.uninstallFileName);
+        BatFileTools.getInstance().execBatFile(upgradeXmlPath.substring(0, upgradeXmlPath.lastIndexOf("\\") + 1) + ViewConfig.uninstallFileName);    //执行升级包中的脚本文件
         // 第一版； 拷贝文件夹
         try {
             File srcDir = new File(upgradePath.substring(0, upgradePath.lastIndexOf(".zip")));
             // File destDir = new File(ViewConfig.programPath.substring(0, ViewConfig.programPath.lastIndexOf("\\")));
-            File destDir = new File(localXmlPath.substring(0, localXmlPath.lastIndexOf(".xml")));
-            FileUtils.copyDirectory(srcDir, destDir);
+            File destDir = new File(localXmlPath.substring(0, localXmlPath.lastIndexOf("\\")));
+            FileUtils.copyDirectory(srcDir, destDir, new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return !pathname.getName().endsWith(".bat");
+                }
+            });
         }catch (Exception e) {
             e.printStackTrace();
         }
-        BatFileTools.getInstance().execBatFile(localBasicPath + ViewConfig.installFileName);
+        BatFileTools.getInstance().execBatFile(upgradeXmlPath.substring(0, upgradeXmlPath.lastIndexOf("\\") + 1) + ViewConfig.installFileName);
+
+        // 将upgradeXml文件写入localXml
+        FileTools.readAndWriteFile(upgradeXmlPath, localXmlPath, new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                logger.info("UpgradeService FileTools readAndWriteFile newValue:" + evt.getNewValue());
+            }
+        });
         return RespBean.ok();
     }
 
