@@ -38,13 +38,8 @@ public class UpgradeController {
         if(ViewConfig.OSName.contains("win")) {
             return upgradeService.upgradeAplication_win(upgradeBasicPath, upgradePKG, localXmlPath, upgradeXmlPath);
         }else if(ViewConfig.OSName.contains("linux")){
-            // Linux 环境
-            if(StringUtils.isEmpty(upgradePKG)) {
-                return RespBean.error("upgradePath 不可为空， 请指定升级包的绝对路径！！");
-            }
             return upgradeService.upgradeAplication_linux(upgradeBasicPath, upgradePKG, localXmlPath, upgradeXmlPath);
         }
-
-        return null;
+        return RespBean.ok();
     }
 }

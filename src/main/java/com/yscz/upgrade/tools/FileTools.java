@@ -330,13 +330,16 @@ public class FileTools {
 
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                bufferedWriter.write(line); //写入文件
+                bufferedWriter.write(line + "\r\n"); //写入文件
                 bufferedWriter.flush();
                 readSize += line.length();// 累加字符长度
                 Integer newValue = (int) ((readSize * 1.0 / totalSize) * 100);// 已解压的字节大小占总字节的大小的百分比
                 if (propertyChangeListener != null) {// 通知调用者解压进度发生改变
                     propertyChangeListener.propertyChange(new PropertyChangeEvent(readFile, "progress", readSize, newValue));
                 }
+            }
+            if (propertyChangeListener != null) {// 通知调用者解压进度发生改变
+                propertyChangeListener.propertyChange(new PropertyChangeEvent(readFile, "progress", readSize, 100));
             }
             reultFlag = true;
         }catch (Exception e) {
