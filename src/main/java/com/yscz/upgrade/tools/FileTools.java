@@ -191,18 +191,28 @@ public class FileTools {
     public static boolean clearFolder(File file) {
         logger.info("FileTools clearFolder folder:" + file.getAbsolutePath());
         try {
-            if(file.getAbsolutePath().endsWith("upgradePKG") && file.isDirectory()) {
-                File[] files = file.listFiles();
-                if(files != null) {
-                    //循环子文件夹重复调用delete方法
-                    for (File f : files) {
-                        clearFolder(f);
+            if(ViewConfig.OSName.contains("win")) {
+                if(file.getAbsolutePath().endsWith("upgradePKG") && file.isDirectory()) {
+                    File[] files = file.listFiles();
+                    if(files != null) {
+                        //循环子文件夹重复调用delete方法
+                        for (File f : files) {
+                            clearFolder(f);
+                        }
                     }
                 }
-            }
-            if(file.getAbsolutePath().contains("upgradePKG") && !file.delete()) {
-                respBean = RespBean.error("delete file failed, file name: " + file.getName());
-                return false;
+                if(file.getAbsolutePath().contains("upgradePKG") && !file.delete()) {
+                    respBean = RespBean.error("delete file failed, file name: " + file.getName());
+                    return false;
+                }
+            }else {
+                if(file.getAbsolutePath().endsWith("upgradePKG") && file.isDirectory()) {
+                    String command = "rm -rf " + file.getAbsolutePath();
+                    if(!ShellCommandTools.runShellCommand(command)){
+                        logger.error("FileTools clearFolder folder error !!");
+                        respBean = RespBean.error("FileTools clearFolder folder error !!");
+                    }
+                }
             }
         }catch (Exception e) {
             e.printStackTrace();
@@ -222,12 +232,14 @@ public class FileTools {
      */
     public static boolean dealXmlFileAttributeBean(XMLParserImpl instance, String upgradePath) {
         logger.info("FileTools dealXmlFileAttributeBean upgradePath :" + upgradePath);
-        List<XmlFileAttributeBean> xmlFileAttributeBeanList = instance.getXmlFileAttributeBeanList("info/files/file");
 
+        boolean dealXmlFileAttributeBeanFlag = false;
+        List<XmlFileAttributeBean> xmlFileAttributeBeanList = instance.getXmlFileAttributeBeanList("info/files/file");
+        logger.info("FileTools dealXmlFileAttributeBean xmlFileAttributeBeanList:" + xmlFileAttributeBeanList);
         try {
             for (XmlFileAttributeBean bean : xmlFileAttributeBeanList) {
-                logger.error("FileTools dealXmlFileAttributeBean fileName:" + bean.getFileName() + ", destDir:" + bean.getDestDir() + ", archiveType:" + bean.getArchiveType());
-                if(!StringUtils.isEmpty(bean.getFileName()) && !StringUtils.isEmpty(bean.getDestDir()) && !StringUtils.isEmpty(bean.getArchiveType())) {
+                logger.info("FileTools dealXmlFileAttributeBean fileName:" + bean.getFileName() + ", destDir:" + bean.getDestDir() + ", archiveType:" + bean.getArchiveType());
+                if(!StringUtils.isEmpty(bean.getFileName()) && !StringUtils.isEmpty(bean.getDestDir()) && (!bean.isArchive() || !StringUtils.isEmpty(bean.getArchiveType()))) {
                     // 文件拷贝到指定路径
                     File srcFile = new File(upgradePath.substring(0, upgradePath.lastIndexOf(".")) + "/" + bean.getFileName());
                     if(srcFile.exists()) {
@@ -238,14 +250,13 @@ public class FileTools {
                             }catch (Exception e) {
                                 logger.error("FileTools dealXmlFileAttributeBean copyFileToDirectory error, srcFile:" + bean.getFileName());
                                 respBean = RespBean.error("FileTools dealXmlFileAttributeBean copyFileToDirectory error, e:" + e.getMessage()).setObj(bean);
-                                return false;
                             }
                         }else {
                             // 软件包 压缩文件 需要解压到指定位置
                             String command = "";
                             switch (bean.getArchiveType()) {
                                 case "rar":
-                                    command = "unrar x " + srcFile.getAbsolutePath() + " " + bean.getDestDir(); break;
+                                    command = "rar x -o+ " + srcFile.getAbsolutePath() + " " + bean.getDestDir().substring(0, bean.getDestDir().lastIndexOf("/") + 1); break;
                                 case "zip":
                                     command = "unzip -od " + bean.getDestDir().substring(0, bean.getDestDir().lastIndexOf("/") + 1) + " " + srcFile.getAbsolutePath(); break;
                                 default:
@@ -256,12 +267,10 @@ public class FileTools {
                                 if(!ShellCommandTools.runShellCommand(command)){
                                     logger.error("FileTools dealXmlFileAttributeBean runShellCommand error !!");
                                     respBean = RespBean.error("FileTools dealXmlFileAttributeBean runShellCommand error !!");
-                                    return false;
                                 }
                             }else {
                                 logger.error("FileTools dealXmlFileAttributeBean command is null, may be exist unknown archive type !!");
                                 respBean = RespBean.error("FileTools dealXmlFileAttributeBean command is null, may be exist unknown archive type !!");
-                                return false;
                             }
                         }
                     }
@@ -270,11 +279,11 @@ public class FileTools {
                     saveDestDir(bean.getDestDir());
                 }
             }
+            dealXmlFileAttributeBeanFlag = true;
         }catch (Exception e) {
             respBean = RespBean.error("FileTools dealXmlFileAttributeBean command is null, may be exist unknown archive type !!");
-            return false;
         }
-        return true;
+        return dealXmlFileAttributeBeanFlag;
     }
 
 
@@ -284,7 +293,9 @@ public class FileTools {
      * @return
      */
     public static boolean dealXmlFolderAttributeBean(XMLParserImpl instance) {
+        boolean dealXmlFolderAttributeBeanFlag = false;
         List<XmlFolderAttributeBean> xmlFolderAttributeBeanList = instance.getXmlFolderAttributeBeanList("info/folders/folder");
+        logger.info("FileTools dealXmlFileAttributeBean xmlFolderAttributeBeanList:" + xmlFolderAttributeBeanList);
         try {
             for (XmlFolderAttributeBean bean : xmlFolderAttributeBeanList) {
                 // 拷贝文件夹到指定位置
@@ -294,17 +305,16 @@ public class FileTools {
                     }catch (Exception e) {
                         logger.error("FileTools dealXmlFolderAttributeBean copyDirectory error, e:" + e.getMessage() + ", " + bean.toString());
                         respBean = RespBean.error("FileTools dealXmlFolderAttributeBean copyDirectory error, e:" + e.getMessage()).setObj(bean);
-                        return false;
                     }
                     // 目标文件夹绝对路径
                     saveDestDir(bean.getDestDir());
                 }
             }
+            dealXmlFolderAttributeBeanFlag = true;
         }catch (Exception e) {
             respBean = RespBean.error("FileTools dealXmlFolderAttributeBean error, e:" + e.getMessage()).setObj(xmlFolderAttributeBeanList);
-            return false;
         }
-        return true;
+        return dealXmlFolderAttributeBeanFlag;
     }
 
     private static void saveDestDir(String destDir) {
