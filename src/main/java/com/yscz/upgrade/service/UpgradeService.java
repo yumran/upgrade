@@ -75,14 +75,18 @@ public class UpgradeService {
         // xmlparser 对象
         XMLParserImpl instance = XMLParserImpl.getInstance(upgradeXmlPath);
 
+        // 获取更新包 XML 对象 folders 下 的 folder
+        if(!FileTools.dealXmlFolderAttributeBean(instance, upgradePath)) return FileTools.respBean;
+
         // 获取 更新包 XML 对象 files
         if (!FileTools.dealXmlFileAttributeBean(instance, upgradePath)) return FileTools.respBean;
 
-        // 获取更新包 XML 对象 folders 下 的 folder
-        if(!FileTools.dealXmlFolderAttributeBean(instance)) return FileTools.respBean;
-
         // 执行脚本文件
         if(!ShellCommandTools.runShellFiles(FileTools.destDirList)) return ShellCommandTools.respBean;
+
+        // 重启 docker
+        // String command = "systemctl restart docker";
+        // if(!ShellCommandTools.runShellCommand(command)) return ShellCommandTools.respBean;
 
         // 将upgradeXml文件写入localXml
         FileTools.readAndWriteFile(upgradeXmlPath, localXmlPath, new PropertyChangeListener() {

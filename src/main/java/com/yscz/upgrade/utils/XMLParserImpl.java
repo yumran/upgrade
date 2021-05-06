@@ -103,7 +103,7 @@ public class XMLParserImpl implements XMLParser {
             }
             if(list.size() > 0) {
                 // 镜像文件先处理
-                list = list.stream().sorted(Comparator.comparing(XmlFileAttributeBean::isImage)).collect(Collectors.toList());
+                list = list.stream().sorted(Comparator.comparing(XmlFileAttributeBean::isImage).reversed()).collect(Collectors.toList());
             }
         }catch (Exception e) {
             e.printStackTrace();

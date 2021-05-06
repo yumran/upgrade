@@ -3,6 +3,7 @@ package com.yscz.upgrade.controller;
 import com.yscz.upgrade.bean.RespBean;
 import com.yscz.upgrade.config.ViewConfig;
 import com.yscz.upgrade.service.UpgradeService;
+import com.yscz.upgrade.utils.ShellFileTaskUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ public class UpgradeController {
         }else if(ViewConfig.OSName.contains("linux")){
             String upgradeBasicPath = upgradePKG.substring(0, upgradePKG.lastIndexOf("/") + 1);    //升级包去除文件名的路径 (基础路径)
             String upgradeXmlPath = upgradePKG.substring(0, upgradePKG.lastIndexOf(".zip")) + "/upgrade.xml";
+            // ShellFileTaskUtils.getInstance().init();
             return upgradeService.upgradeAplication_linux(upgradeBasicPath, upgradePKG, localXmlPath, upgradeXmlPath);
         }
         return RespBean.ok();
