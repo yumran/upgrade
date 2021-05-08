@@ -193,7 +193,7 @@ public class FileTools {
         logger.info("FileTools clearFolder folder:" + file.getAbsolutePath());
         try {
             if(ViewConfig.OSName.contains("win")) {
-                if(file.getAbsolutePath().endsWith("upgradePKG") && file.isDirectory()) {
+                if(file.getAbsolutePath().contains("upgradePKG") && file.isDirectory()) {
                     File[] files = file.listFiles();
                     if(files != null) {
                         //循环子文件夹重复调用delete方法
