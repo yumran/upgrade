@@ -309,7 +309,10 @@ public class FileTools {
                         try {
                             FileUtils.copyFileToDirectory(srcFile, new File(bean.getDestDir()));
 //                                if(bean.isImage()) {
-//                                    String command = "cd " + bean.getDestDir() + " && docker load --input " + bean.getFileName();
+//                                    String command = "docker rm $(docker ps -a |grep 'media'|awk '{print s1}') && docker rmi $(docker images|grep 'media'|awk '{print $3}') && cd " + bean.getDestDir() + " && docker load --input " + bean.getFileName();
+//                                    if(bean.getFileName().contains("alg")) {
+//                                        command = "docker rm $(docker ps -a |grep 'alg'|awk '{print s1}') && docker rmi $(docker images|grep 'alg'|awk '{print $3}') && cd " + bean.getDestDir() + " && docker load --input " + bean.getFileName();
+//                                    }
 //                                    ShellCommandTools.runShellCommand(command);
 //                                }
                         }catch (Exception e) {

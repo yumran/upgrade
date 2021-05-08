@@ -72,6 +72,11 @@ public class UpgradeService {
         // 更新前的检验
         if (!upgradeCommon(upgradeBasicPath, upgradePath, localXmlPath, upgradeXmlPath)) return FileTools.respBean;
 
+        // 停止 docker
+        // String command_stop = "systemctl stop docker";
+        String command_stop = "docker stop $(docker ps -a -q)";
+        if(!ShellCommandTools.runShellCommand(command_stop)) return ShellCommandTools.respBean;
+
         // xmlparser 对象
         XMLParserImpl instance = XMLParserImpl.getInstance(upgradeXmlPath);
 
@@ -81,12 +86,13 @@ public class UpgradeService {
         // 获取 更新包 XML 对象 files
         if (!FileTools.dealXmlFileAttributeBean(instance, upgradePath)) return FileTools.respBean;
 
+        // 重启 docker
+        // String command_start = "systemctl start docker";
+        String command_start = "docker start $(docker ps --filter 'status=exited' -q)";
+        if(!ShellCommandTools.runShellCommand(command_start)) return ShellCommandTools.respBean;
+
         // 执行脚本文件
         if(!ShellCommandTools.runShellFiles(FileTools.destDirList)) return ShellCommandTools.respBean;
-
-        // 重启 docker
-        // String command = "systemctl restart docker";
-        // if(!ShellCommandTools.runShellCommand(command)) return ShellCommandTools.respBean;
 
         // 将upgradeXml文件写入localXml
         FileTools.readAndWriteFile(upgradeXmlPath, localXmlPath, new PropertyChangeListener() {
@@ -124,14 +130,19 @@ public class UpgradeService {
 
 
         // 升级包存在 -》 升级包解压
-        boolean unZipFileFlag = FileTools.unZipFile(upgradePath, destDir, new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                logger.info("UpgradeService upgradeAplication unZipFile newValue:" + evt.getNewValue());
+        if(ViewConfig.OSName.contains("win")) {
+            boolean unZipFileFlag = FileTools.unZipFile(upgradePath, destDir, new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    logger.info("UpgradeService upgradeAplication unZipFile newValue:" + evt.getNewValue());
+                }
+            });
+            if(!unZipFileFlag) {
+                return false;
             }
-        });
-        if(!unZipFileFlag) {
-            return false;
+        }else {
+            String command = "unzip -od " + upgradePath.substring(0, upgradePath.lastIndexOf("/") + 1) + " " + upgradePath;
+            return ShellCommandTools.runShellCommand(command);
         }
 
         // -》 检查本地版本 -》 升级包版本
