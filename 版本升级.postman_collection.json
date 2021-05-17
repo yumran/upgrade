@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "e026c738-493c-4cdc-9f14-0467f89308dc",
+		"name": "版本升级",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localUpgrade-linux",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "localXmlPath",
+							"value": "/data/yscz/up_server/local.xml",
+							"type": "text"
+						},
+						{
+							"key": "upgradePKG",
+							"value": "/data/yscz/up_server/upgradePKG.zip",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://192.168.16.113:6161/upgrade/localUpgrade",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"16",
+						"113"
+					],
+					"port": "6161",
+					"path": [
+						"upgrade",
+						"localUpgrade"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localUpgrade-windows",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "localXmlPath",
+							"value": "C:\\EDA_BS_WIN\\local.xml",
+							"type": "text"
+						},
+						{
+							"key": "upgradePKG",
+							"value": "C:\\upgradePKG.zip",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://192.168.16.125:7171/upgrade/localUpgrade",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"16",
+						"125"
+					],
+					"port": "7171",
+					"path": [
+						"upgrade",
+						"localUpgrade"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
