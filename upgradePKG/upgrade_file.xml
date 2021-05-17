@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<info> 
+  <version>1.0.0</version>
+  <dataTime>2021-04-13 12:12:13</dataTime>
+
+  <!-- 远程服务器IP -->
+  <updateServer> 
+    <ip>127.0.0.1</ip>  
+    <port>8888</port> 
+  </updateServer>
+
+  <!-- 上传文件保存路径 -->
+  <uploadPath></uploadPath>
+
+  <!-- 本地软件保存地址 -->
+  <localPath></localPath>
+
+  <!-- 文件夹 -->
+  <folders>
+    <folder>
+      <folderName></folderName>
+      <destDir></destDir>
+    </folder>
+  </folders>
+
+  <!-- 文件 -->
+  <files> 
+    <file> 
+      <fileName>bs_server.zip</fileName>  
+      <archive>true</archive>  
+      <archiveType>zip</archiveType>
+      <image>false</image>
+      <destDir>/data/yscz/bs_server</destDir> 
+    </file>
+    
+    <file>
+      <fileName>bm_server.rar</fileName>
+      <archive>true</archive>
+      <archiveType>rar</archiveType>
+      <image>false</image>
+      <destDir>/data/yscz/bm_server</destDir>
+    </file>
+ 
+    <file>
+      <fileName>bm-1.1.3-SNAPSHOT.jar</fileName>
+      <archive>false</archive>
+      <archiveType></archiveType>
+      <image>false</image>
+      <destDir>/data/yscz/bm_server</destDir>
+    </file>
+
+    <file>
+      <fileName>platform.zip</fileName>
+      <archive>true</archive>
+      <archiveType>zip</archiveType>
+      <image>false</image>
+      <destDir>/data/yscz/platform</destDir>
+    </file>
+
+    <file>
+      <fileName>alg.rar</fileName>
+      <archive>true</archive>
+      <archiveType>rar</archiveType>
+      <image>false</image>
+      <destDir>/data/yscz/alg</destDir>
+    </file>
+    
+    <file>
+      <fileName>algv2.tar</fileName>
+      <archive>true</archive>
+      <archiveType>tar</archiveType>
+      <image>true</image>
+      <destDir>/data/yscz/alg</destDir>
+    </file>
+
+  </files> 
+</info>

@@ -1,0 +1,21 @@
+logging:
+  config: classpath:logback.xml
+  level:
+    org:
+      springframework:
+        web: INFO
+    root: INFO
+  file:
+    path: /home/app/logs
+
+server:
+  ip: 127.0.0.1
+  port: 6161
+  servlet:
+    context-path: /upgrade
+    session:
+      timeout: PT1H
+
+spring:
+  application:
+    name: upgrade Server

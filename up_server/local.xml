@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<info> 
+  <version>1.0.0</version>
+  <dataTime>2021-04-13 12:12:13</dataTime>
+
+  <!-- 远程服务器IP -->
+  <updateServer> 
+    <ip>127.0.0.1</ip>  
+    <port>8888</port> 
+  </updateServer>
+
+  <!-- 上传文件保存路径 -->
+  <uploadPath></uploadPath>
+
+  <!-- 本地软件保存地址 -->
+  <localPath></localPath>
+
+  <!-- 文件夹 -->
+  <folders>
+    <folder>
+      <folderName>bm_server</folderName>
+      <destDir>/data/yscz/bm_server</destDir>
+    </folder>
+
+    <folder>
+      <folderName>bs_server</folderName>
+      <destDir>/data/yscz/bs_server</destDir>
+    </folder>
+
+    <folder>
+      <folderName>alg</folderName>
+      <destDir>/data/yscz/alg</destDir>
+    </folder>
+
+    <folder>
+      <folderName>platform</folderName>
+      <destDir>/data/yscz/platform</destDir>
+    </folder>
+  </folders>
+
+  <!-- 文件 -->
+  <files> 
+    <file>
+      <fileName>algv2.tar</fileName>
+      <archive>true</archive>
+      <archiveType>tar</archiveType>
+      <image>true</image>
+      <destDir>/data/yscz/alg</destDir>
+    </file>
+
+  </files> 
+</info>
